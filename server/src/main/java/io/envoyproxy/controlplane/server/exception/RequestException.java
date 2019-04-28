@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 public class RequestException extends StatusRuntimeException {
   public RequestException(Status status) {
-    super(status);
+    this(status, null);
   }
 
   public RequestException(Status status, @Nullable Metadata trailers) {
