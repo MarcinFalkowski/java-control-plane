@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -200,6 +201,7 @@ public class DiscoveryServer {
     private final long streamId;
     private final boolean ads;
     private final Executor executor;
+    private final AtomicBoolean isClosing = new AtomicBoolean();
 
     private AtomicLong streamNonce;
 
@@ -247,8 +249,7 @@ public class DiscoveryServer {
       try {
         callbacks.forEach(cb -> cb.onStreamRequest(streamId, request));
       } catch (RequestException e) {
-        responseObserver.onError(e);
-        cancel();
+        closeWithError(e);
         return;
       }
 
@@ -312,6 +313,13 @@ public class DiscoveryServer {
     void onCancelled() {
       LOGGER.info("[{}] stream cancelled", streamId);
       cancel();
+    }
+
+    private void closeWithError(Throwable exception) {
+      if (isClosing.compareAndSet(false, true)) {
+        responseObserver.onError(exception);
+        cancel();
+      }
     }
 
     private void cancel() {
