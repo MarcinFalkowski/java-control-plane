@@ -51,7 +51,7 @@ public interface DiscoveryServerCallbacks {
    * @param request the discovery request sent by the envoy instance
    *
    * @throws RequestException optionally can throw {@link RequestException} with custom status. That status
-   *     will be returned to the client and stream will be closed with error.
+   *     will be returned to the client and the stream will be closed with error.
    */
   default void onStreamRequest(long streamId, DiscoveryRequest request) {
 
