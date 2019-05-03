@@ -316,9 +316,7 @@ public class DiscoveryServer {
     }
 
     private void closeWithError(Throwable exception) {
-      if (isClosing.compareAndSet(false, true)) {
-        responseObserver.onError(exception);
-      }
+      responseObserver.onError(exception);
       cancel();
     }
 
